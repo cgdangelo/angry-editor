@@ -1,0 +1,7 @@
+{
+  "name": "angry-editor",
+  "version": "1.0.0",
+  "description": "A web-based text editor for the World of Warcraft addon Angry Assignments.",
+  "author": "Charles D'Angelo <c.g.dangelo@gmail.com>",
+  "license": "MIT"
+}
