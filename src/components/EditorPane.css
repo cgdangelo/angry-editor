@@ -1,0 +1,10 @@
+.textarea {
+  background-color: #dadada;
+  border: 0;
+  box-sizing: border-box;
+  display: inline-block;
+  float: left;
+  margin: 0;
+  padding: 1rem;
+  width: 50%;
+}
