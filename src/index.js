@@ -1,1 +1,4 @@
-document.write('Hello');
+var component = require('./component');
+
+document.body.appendChild(component());
+

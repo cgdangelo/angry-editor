@@ -7,11 +7,16 @@ module.exports = {
   entry: {
     app: './src'
   },
+  devtool: 'eval-source-map',
   output: {
     path: path.join(__dirname, 'build'),
-    filename: '[name].js'
+    filename: '[name]-[chunkhash].js'
   },
   plugins: [
-    new HtmlWebpackPlugin({ title: 'Angry Editor' })
-  ]
+    new HtmlWebpackPlugin()
+  ],
+  devServer: {
+    inline: true
+  }
 };
+/* eslint-enable */
