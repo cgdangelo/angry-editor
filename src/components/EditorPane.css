@@ -1,20 +1,15 @@
-.textarea {
+.editorContainer {
   background-color: #efefef;
-  border: 0;
+  border-right: 1px solid #ddd;
   box-sizing: border-box;
-  display: inline-block;
   height: 100vh;
-  float: left;
   margin: 0;
   padding: 1rem;
-  resize: none;
   width: 50vw;
 }
 
-.textarea:focus {
-  outline: 0;
-}
-
-.textarea:first-of-type {
-  border-right: 1px solid #ddd;
+:global(.DraftEditor-root) {
+  font-family: Georgia;
+  height: 100%;
+  width: 100%;
 }

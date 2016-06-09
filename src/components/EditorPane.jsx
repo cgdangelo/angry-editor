@@ -1,39 +1,32 @@
 import React, { Component } from 'react';
+import { Editor, EditorState } from 'draft-js';
 
+import 'draft-js/dist/Draft.css';
 import styles from './EditorPane.css';
 
 export default class EditorPane extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
 
-    this.handleInput = ::this.handleInput;
+    this.handleChange = ::this.handleChange;
   }
 
   state = {
-    input: '',
-    output: '',
+    editorState: EditorState.createEmpty(),
   };
 
-  handleInput({ target: { value } }) {
-    this.setState({
-      input: value,
-      output: value.length,
-    });
+  handleChange(editorState) {
+    this.setState({ editorState });
   }
 
   render() {
-    return (
-      <div>
-        <textarea
-          className={styles.textarea}
-          onChange={this.handleInput}
-          value={this.state.input}
-        />
+    const { editorState } = this.state;
 
-        <textarea
-          disabled
-          className={styles.textarea}
-          value={this.state.output}
+    return (
+      <div className={styles.editorContainer}>
+        <Editor
+          editorState={editorState}
+          onChange={this.handleChange}
         />
       </div>
     );
