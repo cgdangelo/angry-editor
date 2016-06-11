@@ -1,52 +1,25 @@
 import React, { Component } from 'react';
 import {
-  CompositeDecorator,
   EditorState,
   Entity,
   Modifier,
   convertToRaw,
 } from 'draft-js';
 import Editor from 'draft-js-plugins-editor';
+import createEmojiPlugin from 'draft-js-emoji-plugin';
 
-import 'draft-js/dist/Draft.css';
+import 'draft-js-emoji-plugin/lib/plugin.css';
 import styles from './EditorPane.css';
 
-const findIconEntities = (contentBlock, callback) => {
-  contentBlock.findEntityRanges((character) => {
-    const entityKey = character.getEntity();
-
-    return (
-      entityKey !== null &&
-      Entity.get(entityKey).getType() === 'icon'
-    );
-  }, callback);
-};
-
-const Icon = ({ entityKey }) => {
-  const { iconClass } = Entity.get(entityKey).getData();
-
-  return (
-    <img
-      alt={`{icon ${iconClass}}`}
-      className={iconClass}
-      style={{
-        height: '25px',
-        width: '25px',
-      }}
-    />
-  );
-};
+const emojiPlugin = createEmojiPlugin();
+const { EmojiSuggestions } = emojiPlugin;
 
 export default class EditorPane extends Component {
   constructor(props) {
     super(props);
 
-    const decorator = new CompositeDecorator([
-      { strategy: findIconEntities, component: Icon },
-    ]);
-
     this.state = {
-      editorState: EditorState.createEmpty(decorator),
+      editorState: EditorState.createEmpty(),
     };
 
     this.handleChange = ::this.handleChange;
@@ -106,17 +79,17 @@ export default class EditorPane extends Component {
         <div className={styles.debugButtons}>
           <button onClick={this.logRaw}>Log Raw</button>
           <button onClick={this.logState}>Log State</button>
+          <button onClick={this.insertBloodlust}>Bloodlust</button>
         </div>
 
-        <div className={styles.editorContainer}>
-          <div className={styles.editorToolbar}>
-            <button onClick={this.insertBloodlust}>Bloodlust</button>
-          </div>
-
+        <div className={styles.editor}>
           <Editor
             editorState={editorState}
             onChange={this.handleChange}
+            plugins={[emojiPlugin]}
           />
+
+          <EmojiSuggestions />
         </div>
       </div>
     );

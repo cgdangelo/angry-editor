@@ -1,15 +1,15 @@
-.editorContainer {
-  background-color: #efefef;
-  border-right: 1px solid #ddd;
+.editor {
+  background: #fefefe;
+  border: 1px solid #ddd;
+  border-radius: 2px;
+  box-shadow: inset 0px 1px 8px -3px #ABABAB;
   box-sizing: border-box;
-  height: 100vh;
-  margin: 0;
-  padding: 1rem;
-  width: 50vw;
+  cursor: text;
+  margin-bottom: 2em;
+  padding: 16px;
 }
 
-:global(.DraftEditor-root) {
+.editor :global(.public-DraftEditor-content) {
+  min-height: 140px;
   font-family: Georgia;
-  height: 100%;
-  width: 100%;
 }
