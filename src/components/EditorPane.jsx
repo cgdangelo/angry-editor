@@ -4,10 +4,10 @@ import {
   Editor,
   EditorState,
   Entity,
-  Modifier,
   convertToRaw,
 } from 'draft-js';
 
+import addIcon from '../modifiers/addIcon';
 import Icon from './Icon';
 
 import styles from './EditorPane.scss';
@@ -47,39 +47,16 @@ export default class EditorPane extends Component {
     this.logState = ::this.logState;
   }
 
+  addIcon(iconClass) {
+    this.setState({ editorState: addIcon(this.state.editorState, iconClass) });
+  }
+
   handleChange(editorState) {
     this.setState({ editorState });
   }
 
   insertBloodlust() {
-    const { editorState } = this.state;
-    const contentState = editorState.getCurrentContent();
-    const selectionState = editorState.getSelection();
-
-    const entityKey = Entity.create('icon', 'IMMUTABLE', {
-      iconClass: 'spell_nature_bloodlust',
-    });
-
-    const iconReplacedContent = Modifier.replaceText(
-      contentState,
-      selectionState,
-      ' ',
-      null,
-      entityKey,
-    );
-
-    const newEditorState = EditorState.push(
-      editorState,
-      iconReplacedContent,
-      'insert-icon',
-    );
-
-    this.setState({
-      editorState: EditorState.forceSelection(
-        newEditorState,
-        iconReplacedContent.getSelectionAfter(),
-      ),
-    });
+    this.addIcon('spell_nature_bloodlust');
   }
 
   logRaw() {
