@@ -1,11 +1,17 @@
+// @flow
 import {
+  CharacterMetadata,
+  CharacterMetaList,
   CompositeDecorator,
+  ContentBlock,
+  ContentState,
   Editor,
   EditorState,
   Entity,
   convertToRaw,
 } from 'draft-js';
-import React, { Component } from 'react';
+import { getEntityRanges } from 'draft-js-utils';
+import React, { Component, Element } from 'react';
 import {
   Button,
   ButtonGroup,
@@ -19,10 +25,68 @@ import Icon from './Icon';
 
 import styles from './EditorPane.scss';
 
-const findIconEntities = (contentBlock, callback) => {
+class AngryGenerator {
+  blocks: Array<ContentBlock>;
+  contentState: ContentState;
+  currentBlock: number;
+  output: Array<string>;
+  totalBlocks: number;
+
+  constructor(contentState: ContentState) {
+    this.contentState = contentState;
+  }
+
+  processBlock(): void {
+    const block = this.blocks[this.currentBlock];
+
+    this.output.push(this.renderBlockContent(block));
+
+    this.currentBlock += 1;
+  }
+
+  renderBlockContent(block: ContentBlock): string {
+    const blockText: string = block.getText();
+    const charMetaList: CharacterMetaList = block.getCharacterList();
+    const entityPieces: Array<any> = getEntityRanges(blockText, charMetaList);
+
+    return entityPieces.map(([entityKey, stylePieces]) => {
+      const content: string = stylePieces.map(([text]): string => (text)).join('');
+      const entity: ?Entity = entityKey ? Entity.get(entityKey) : null;
+
+      if (!entity) {
+        return content;
+      }
+
+      const entityType: ?string = (entity === null) ? null : entity.getType();
+
+      if (entity && entityType !== null && entityType === 'icon') {
+        const { iconClass, outputsTo }: { iconClass: string, outputsTo: string } = entity.getData();
+
+        return outputsTo || `{icon ${iconClass}}`;
+      }
+
+      return content;
+    }).join('');
+  }
+
+  generate(): string {
+    this.output = [];
+    this.blocks = this.contentState.getBlocksAsArray();
+    this.totalBlocks = this.blocks.length;
+    this.currentBlock = 0;
+
+    while (this.currentBlock < this.totalBlocks) {
+      this.processBlock();
+    }
+
+    return this.output.join('\n').trim();
+  }
+}
+
+const findIconEntities = (contentBlock: ContentBlock, callback) => {
   contentBlock.findEntityRanges(
-    (character) => {
-      const entityKey = character.getEntity();
+    (character: CharacterMetadata): boolean => {
+      const entityKey: ?string = character.getEntity();
 
       return (
         entityKey !== null &&
@@ -33,7 +97,17 @@ const findIconEntities = (contentBlock, callback) => {
   );
 };
 
-const commonIcons = {
+type IconMenu = Array<{
+  label: string;
+  icon: string;
+  outputsTo?: string
+}>;
+
+const commonIcons: {
+  Haste: IconMenu,
+  Classes: IconMenu,
+  Roles: IconMenu,
+} = {
   Haste: [
     { label: 'Bloodlust', icon: 'spell_nature_bloodlust', outputsTo: '{bl}' },
     { label: 'Heroism', icon: 'ability_shaman_heroism', outputsTo: '{hero}' },
@@ -73,8 +147,8 @@ const commonIcons = {
 };
 
 export default class EditorPane extends Component {
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
 
     const decorator = new CompositeDecorator([
       {
@@ -87,35 +161,52 @@ export default class EditorPane extends Component {
       editorState: EditorState.createEmpty(decorator),
     };
 
-    this.handleChange = ::this.handleChange;
-    this.handleCommonIconTap = ::this.handleCommonIconTap;
-    this.logRaw = ::this.logRaw;
-    this.logState = ::this.logState;
+    this.handleChange = this.handleChange.bind(this);
+    this.handleCommonIconTap = this.handleCommonIconTap.bind(this);
+    this.logRaw = this.logRaw.bind(this);
+    this.logState = this.logState.bind(this);
+    this.logAngry = this.logAngry.bind(this);
   }
 
-  addIcon(iconClass) {
-    this.setState({ editorState: addIcon(this.state.editorState, iconClass) });
+  state: {
+    editorState: EditorState;
+  };
+
+  handleChange: (event: any) => void;
+  handleCommonIconTap: (event: any) => void;
+  logRaw: () => void;
+  logState: () => void;
+  logAngry: () => void;
+
+  props: any;
+
+  addIcon(iconClass: string, outputsTo?: string): void {
+    this.setState({ editorState: addIcon(this.state.editorState, iconClass, outputsTo) });
   }
 
-  handleChange(editorState) {
+  handleChange(editorState: EditorState): void {
     this.setState({ editorState });
   }
 
-  handleCommonIconTap(event) {
-    const { icon } = event.target.dataset;
+  handleCommonIconTap(event: any): void {
+    const { icon, outputsTo } = event.target.dataset;
 
-    this.addIcon(icon);
+    this.addIcon(icon, outputsTo);
   }
 
-  logRaw() {
+  logRaw(): void {
     console.log(convertToRaw(this.state.editorState.getCurrentContent()));
   }
 
-  logState() {
+  logState(): void {
     console.log(this.state.editorState.toJS());
   }
 
-  render() {
+  logAngry(): void {
+    console.log(new AngryGenerator(this.state.editorState.getCurrentContent()).generate());
+  }
+
+  render(): Element {
     const { editorState } = this.state;
 
     return (
@@ -124,6 +215,7 @@ export default class EditorPane extends Component {
           <ButtonGroup>
             <Button onClick={this.logRaw}>Log Raw</Button>
             <Button onClick={this.logState}>Log State</Button>
+            <Button onClick={this.logAngry}>Log Angry</Button>
           </ButtonGroup>
 
           {Object.keys(commonIcons).map((iconGroup) => (
@@ -132,9 +224,10 @@ export default class EditorPane extends Component {
               key={iconGroup}
               title={iconGroup}
             >
-              {commonIcons[iconGroup].map(({ label, icon }, index) => (
+              {commonIcons[iconGroup].map(({ label, icon, outputsTo }, index) => (
                 <MenuItem
                   data-icon={icon}
+                  data-outputs-to={outputsTo}
                   key={index}
                   onClick={this.handleCommonIconTap}
                 >

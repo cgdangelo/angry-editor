@@ -1,7 +1,10 @@
+// @flow
 import { Entity } from 'draft-js';
-import React, { PropTypes } from 'react';
+import React, { Component, Element } from 'react';
 
-export default function Icon({ children, entityKey }) {
+export default function Icon(
+  { children, entityKey }: { children: Array<Component>, entityKey: string }
+): Element {
   const { iconClass } = Entity.get(entityKey).getData();
 
   return (
@@ -20,8 +23,3 @@ export default function Icon({ children, entityKey }) {
     </span>
   );
 }
-
-Icon.propTypes = {
-  children: PropTypes.arrayOf(PropTypes.object),
-  entityKey: PropTypes.string.isRequired,
-};

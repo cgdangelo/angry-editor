@@ -1,6 +1,6 @@
 import { EditorState, Entity, Modifier } from 'draft-js';
 
-export default function addIcon(editorState, iconClass, outputsTo?) {
+export default function addIcon(editorState: EditorState, iconClass: String, outputsTo?: String) {
   const contentState = editorState.getCurrentContent();
   const selectionState = editorState.getSelection();
 

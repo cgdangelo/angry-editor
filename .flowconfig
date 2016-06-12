@@ -1,0 +1,13 @@
+[ignore]
+.*/build/.*
+
+[libs]
+node_modules/fbjs/flow/lib
+node_modules/normalizecss/normalize.css
+src/interfaces/SCSSModule.js
+
+[options]
+module.name_mapper='.*\(.s?css\)' -> 'SCSSModule'
+module.system=haste
+strip_root=true
+suppress_type=$FlowIssue
