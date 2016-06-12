@@ -1,16 +1,10 @@
 // @flow
 import {
-  CharacterMetadata,
-  CharacterMetaList,
   CompositeDecorator,
-  ContentBlock,
-  ContentState,
   Editor,
   EditorState,
-  Entity,
   convertToRaw,
 } from 'draft-js';
-import { getEntityRanges } from 'draft-js-utils';
 import React, { Component, Element } from 'react';
 import {
   Button,
@@ -20,82 +14,12 @@ import {
   MenuItem,
 } from 'react-bootstrap';
 
-import addIcon from '../modifiers/addIcon';
+import addIcon from '../draft/modifiers/addIcon';
+import convertToAngry from '../draft/convertToAngry';
+import findEntitiesByType from '../draft/findEntitiesByType';
 import Icon from './Icon';
 
 import styles from './EditorPane.scss';
-
-class AngryGenerator {
-  blocks: Array<ContentBlock>;
-  contentState: ContentState;
-  currentBlock: number;
-  output: Array<string>;
-  totalBlocks: number;
-
-  constructor(contentState: ContentState) {
-    this.contentState = contentState;
-  }
-
-  processBlock(): void {
-    const block = this.blocks[this.currentBlock];
-
-    this.output.push(this.renderBlockContent(block));
-
-    this.currentBlock += 1;
-  }
-
-  renderBlockContent(block: ContentBlock): string {
-    const blockText: string = block.getText();
-    const charMetaList: CharacterMetaList = block.getCharacterList();
-    const entityPieces: Array<any> = getEntityRanges(blockText, charMetaList);
-
-    return entityPieces.map(([entityKey, stylePieces]) => {
-      const content: string = stylePieces.map(([text]): string => (text)).join('');
-      const entity: ?Entity = entityKey ? Entity.get(entityKey) : null;
-
-      if (!entity) {
-        return content;
-      }
-
-      const entityType: ?string = (entity === null) ? null : entity.getType();
-
-      if (entity && entityType !== null && entityType === 'icon') {
-        const { iconClass, outputsTo }: { iconClass: string, outputsTo: string } = entity.getData();
-
-        return outputsTo || `{icon ${iconClass}}`;
-      }
-
-      return content;
-    }).join('');
-  }
-
-  generate(): string {
-    this.output = [];
-    this.blocks = this.contentState.getBlocksAsArray();
-    this.totalBlocks = this.blocks.length;
-    this.currentBlock = 0;
-
-    while (this.currentBlock < this.totalBlocks) {
-      this.processBlock();
-    }
-
-    return this.output.join('\n').trim();
-  }
-}
-
-const findIconEntities = (contentBlock: ContentBlock, callback) => {
-  contentBlock.findEntityRanges(
-    (character: CharacterMetadata): boolean => {
-      const entityKey: ?string = character.getEntity();
-
-      return (
-        entityKey !== null &&
-        Entity.get(entityKey).getType() === 'icon'
-      );
-    },
-    callback
-  );
-};
 
 type IconMenu = Array<{
   label: string;
@@ -114,18 +38,18 @@ const commonIcons: {
   ],
 
   Classes: [
-    { label: 'Death Knight', icon: 'classicon_deathknight' },
-    { label: 'Demon Hunter', icon: 'classicon_demonhunter' },
-    { label: 'Druid', icon: 'classicon_druid' },
-    { label: 'Hunter', icon: 'classicon_hunter' },
-    { label: 'Mage', icon: 'classicon_mage' },
-    { label: 'Monk', icon: 'classicon_monk' },
-    { label: 'Paladin', icon: 'classicon_paladin' },
-    { label: 'Priest', icon: 'classicon_priest' },
-    { label: 'Rogue', icon: 'classicon_rogue' },
-    { label: 'Shaman', icon: 'classicon_shaman' },
-    { label: 'Warlock', icon: 'classicon_warlock' },
-    { label: 'Warrior', icon: 'classicon_warrior' },
+    { label: 'Death Knight', icon: 'classicon_deathknight', outputsTo: '{deathknight}' },
+    { label: 'Demon Hunter', icon: 'classicon_demonhunter', outputsTo: '{demonhunter}' },
+    { label: 'Druid', icon: 'classicon_druid', outputsTo: '{druid}' },
+    { label: 'Hunter', icon: 'classicon_hunter', outputsTo: '{hunter}' },
+    { label: 'Mage', icon: 'classicon_mage', outputsTo: '{mage}' },
+    { label: 'Monk', icon: 'classicon_monk', outputsTo: '{monk}' },
+    { label: 'Paladin', icon: 'classicon_paladin', outputsTo: '{paladin}' },
+    { label: 'Priest', icon: 'classicon_priest', outputsTo: '{priest}' },
+    { label: 'Rogue', icon: 'classicon_rogue', outputsTo: '{rogue}' },
+    { label: 'Shaman', icon: 'classicon_shaman', outputsTo: '{shaman}' },
+    { label: 'Warlock', icon: 'classicon_warlock', outputsTo: '{warlock}' },
+    { label: 'Warrior', icon: 'classicon_warrior', outputsTo: '{warrior}' },
   ],
 
   Markers: [
@@ -152,7 +76,7 @@ export default class EditorPane extends Component {
 
     const decorator = new CompositeDecorator([
       {
-        strategy: findIconEntities,
+        strategy: findEntitiesByType('icon'),
         component: Icon,
       },
     ]);
@@ -203,7 +127,7 @@ export default class EditorPane extends Component {
   }
 
   logAngry(): void {
-    console.log(new AngryGenerator(this.state.editorState.getCurrentContent()).generate());
+    console.log(convertToAngry(this.state.editorState.getCurrentContent()));
   }
 
   render(): Element {

@@ -1,4 +1,3 @@
-// @flow
 import { EditorState, Entity, Modifier } from 'draft-js';
 
 export default function addIcon(editorState: EditorState, iconClass: String, outputsTo?: String) {
