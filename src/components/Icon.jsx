@@ -12,8 +12,8 @@ export default function Icon({ children, entityKey }) {
         backgroundSize: 'contain',
         display: 'inline-block',
         color: 'transparent',
-        height: '20px',
-        width: '20px',
+        height: '18px',
+        width: '18px',
       }}
     >
       {children}

@@ -26,6 +26,26 @@ const findIconEntities = (contentBlock, callback) => {
   );
 };
 
+const commonIcons = [
+  // Lust
+  { label: 'Bloodlust', icon: 'spell_nature_bloodlust', outputsTo: '{bl}' },
+  { label: 'Heroism', icon: 'ability_shaman_heroism', outputsTo: '{hero}' },
+
+  // Classes
+  { label: 'Death Knight', icon: 'classicon_deathknight' },
+  { label: 'Demon Hunter', icon: 'classicon_demonhunter' },
+  { label: 'Druid', icon: 'classicon_druid' },
+  { label: 'Hunter', icon: 'classicon_hunter' },
+  { label: 'Mage', icon: 'classicon_mage' },
+  { label: 'Monk', icon: 'classicon_monk' },
+  { label: 'Paladin', icon: 'classicon_paladin' },
+  { label: 'Priest', icon: 'classicon_priest' },
+  { label: 'Rogue', icon: 'classicon_rogue' },
+  { label: 'Shaman', icon: 'classicon_shaman' },
+  { label: 'Warlock', icon: 'classicon_warlock' },
+  { label: 'Warrior', icon: 'classicon_warrior' },
+];
+
 export default class EditorPane extends Component {
   constructor(props) {
     super(props);
@@ -42,7 +62,7 @@ export default class EditorPane extends Component {
     };
 
     this.handleChange = ::this.handleChange;
-    this.insertBloodlust = ::this.insertBloodlust;
+    this.handleCommonIconTap = ::this.handleCommonIconTap;
     this.logRaw = ::this.logRaw;
     this.logState = ::this.logState;
   }
@@ -55,8 +75,10 @@ export default class EditorPane extends Component {
     this.setState({ editorState });
   }
 
-  insertBloodlust() {
-    this.addIcon('spell_nature_bloodlust');
+  handleCommonIconTap(event) {
+    const { icon } = event.target.dataset;
+
+    this.addIcon(icon);
   }
 
   logRaw() {
@@ -75,7 +97,15 @@ export default class EditorPane extends Component {
         <div className={styles.debugButtons}>
           <button onClick={this.logRaw}>Log Raw</button>
           <button onClick={this.logState}>Log State</button>
-          <button onClick={this.insertBloodlust}>Bloodlust</button>
+          {commonIcons.map(({ label, icon }, index) => (
+            <button
+              data-icon={icon}
+              key={index}
+              onClick={this.handleCommonIconTap}
+            >
+              {label}
+            </button>
+          ))}
         </div>
 
         <div className={styles.editor}>
