@@ -1,18 +1,13 @@
 import React, { Component } from 'react';
 import {
+  Editor,
   EditorState,
   Entity,
   Modifier,
   convertToRaw,
 } from 'draft-js';
-import Editor from 'draft-js-plugins-editor';
-import createEmojiPlugin from 'draft-js-emoji-plugin';
 
-import 'draft-js-emoji-plugin/lib/plugin.css';
 import styles from './EditorPane.css';
-
-const emojiPlugin = createEmojiPlugin();
-const { EmojiSuggestions } = emojiPlugin;
 
 export default class EditorPane extends Component {
   constructor(props) {
@@ -86,10 +81,7 @@ export default class EditorPane extends Component {
           <Editor
             editorState={editorState}
             onChange={this.handleChange}
-            plugins={[emojiPlugin]}
           />
-
-          <EmojiSuggestions />
         </div>
       </div>
     );
