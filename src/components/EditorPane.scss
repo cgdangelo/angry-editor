@@ -12,9 +12,9 @@
   cursor: text;
   margin-bottom: 2em;
   padding: 16px;
-}
 
-.editor :global(.public-DraftEditor-content) {
-  min-height: 50vh;
-  font-family: Georgia;
+ :global(.public-DraftEditor-content) {
+    min-height: 50vh;
+    font-family: Georgia;
+  }
 }

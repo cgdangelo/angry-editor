@@ -10,7 +10,7 @@ import {
 
 import Icon from './Icon';
 
-import styles from './EditorPane.css';
+import styles from './EditorPane.scss';
 
 const findIconEntities = (contentBlock, callback) => {
   contentBlock.findEntityRanges(
