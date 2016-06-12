@@ -8,6 +8,8 @@ import {
   convertToRaw,
 } from 'draft-js';
 
+import Icon from './Icon';
+
 import styles from './EditorPane.css';
 
 const findIconEntities = (contentBlock, callback) => {
@@ -24,26 +26,6 @@ const findIconEntities = (contentBlock, callback) => {
   );
 };
 
-const Icon = ({ children, entityKey }) => {
-  const { iconClass } = Entity.get(entityKey).getData();
-
-  return (
-    <span
-      className={iconClass}
-      style={{
-        background: `url(/static/icons/${iconClass}.png) no-repeat top left`,
-        backgroundSize: 'contain',
-        display: 'inline-block',
-        color: 'transparent',
-        height: '20px',
-        width: '20px',
-      }}
-    >
-      {children}
-    </span>
-  );
-};
-
 export default class EditorPane extends Component {
   constructor(props) {
     super(props);
@@ -52,7 +34,7 @@ export default class EditorPane extends Component {
       {
         strategy: findIconEntities,
         component: Icon,
-      }
+      },
     ]);
 
     this.state = {
