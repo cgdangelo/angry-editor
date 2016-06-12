@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {
+  CompositeDecorator,
   Editor,
   EditorState,
   Entity,
@@ -9,12 +10,53 @@ import {
 
 import styles from './EditorPane.css';
 
+const findIconEntities = (contentBlock, callback) => {
+  contentBlock.findEntityRanges(
+    (character) => {
+      const entityKey = character.getEntity();
+
+      return (
+        entityKey !== null &&
+        Entity.get(entityKey).getType() === 'icon'
+      );
+    },
+    callback
+  );
+};
+
+const Icon = ({ children, entityKey }) => {
+  const { iconClass } = Entity.get(entityKey).getData();
+
+  return (
+    <span
+      className={iconClass}
+      style={{
+        background: `url(/static/icons/${iconClass}.png) no-repeat top left`,
+        backgroundSize: 'contain',
+        display: 'inline-block',
+        color: 'transparent',
+        height: '20px',
+        width: '20px',
+      }}
+    >
+      {children}
+    </span>
+  );
+};
+
 export default class EditorPane extends Component {
   constructor(props) {
     super(props);
 
+    const decorator = new CompositeDecorator([
+      {
+        strategy: findIconEntities,
+        component: Icon,
+      }
+    ]);
+
     this.state = {
-      editorState: EditorState.createEmpty(),
+      editorState: EditorState.createEmpty(decorator),
     };
 
     this.handleChange = ::this.handleChange;
