@@ -6,7 +6,7 @@ import EditorPane from './EditorPane';
 
 import styles from './App.scss';
 
-export default (): Element => (
+const App = (): Element => (
   <Layout className={styles.layout}>
     <Panel className={styles.panel}>
       <AppBar flat>
@@ -17,3 +17,5 @@ export default (): Element => (
     </Panel>
   </Layout>
 );
+
+export default App;

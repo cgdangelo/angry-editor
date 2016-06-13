@@ -1,12 +1,14 @@
 // @flow
+import classnames from 'classnames';
 import React, { Component, Element } from 'react';
 import { Button, FontIcon, Menu } from 'react-toolbox';
 
 import styles from './ButtonMenu.scss';
 
-export default class ButtonMenu extends Component {
+class ButtonMenu extends Component {
   constructor(props: {
     children?: Array<Element>,
+    className?: string,
     onSelect?: (value: any) => void,
     title: string,
   }) {
@@ -24,7 +26,12 @@ export default class ButtonMenu extends Component {
     isActive: boolean,
   }
 
-  handleMenuButtonClick: (event: SyntheticEvent, value: any, originalEvent: Event) => void;
+  handleMenuButtonClick: (
+    event: SyntheticEvent,
+    value: any,
+    originalEvent: Event,
+  ) => void;
+
   handleMenuHide: () => void;
 
   handleMenuButtonClick(): void {
@@ -36,10 +43,10 @@ export default class ButtonMenu extends Component {
   }
 
   render(): Element {
-    const { children, onSelect, title } = this.props;
+    const { children, className, onSelect, title } = this.props;
 
     return (
-      <div className={styles.buttonMenu}>
+      <div className={classnames(styles.buttonMenu, className)}>
         <Button onClick={this.handleMenuButtonClick}>
           <FontIcon value="arrow_drop_down" /> {title}
         </Button>
@@ -56,3 +63,5 @@ export default class ButtonMenu extends Component {
     );
   }
 }
+
+export default ButtonMenu;

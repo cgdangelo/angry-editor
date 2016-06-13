@@ -1,25 +1,37 @@
 // @flow
+import classnames from 'classnames';
 import { Entity } from 'draft-js';
 import React, { Component, Element } from 'react';
 
-export default function Icon(
-  { children, entityKey }: { children: Array<Component>, entityKey: string }
-): Element {
+import styles from './Icon.scss';
+
+const Icon = ({
+  children,
+  className,
+  iconClass,
+}: {
+  children?: Array<Component>,
+  className?: string,
+  iconClass: string,
+}): Element => (
+  <span
+    className={classnames(styles.icon, className)}
+    style={{ backgroundImage: `url(/static/icons/${iconClass}.png)` }}
+  >
+    {children}
+  </span>
+);
+
+Icon.fromEntity = ({
+  entityKey,
+  ...otherProps,
+}: {
+  entityKey: string,
+  otherProps: any,
+}): Element => {
   const { iconClass } = Entity.get(entityKey).getData();
 
-  return (
-    <span
-      className={iconClass}
-      style={{
-        background: `url(/static/icons/${iconClass}.png) no-repeat top left`,
-        backgroundSize: 'contain',
-        display: 'inline-block',
-        color: 'transparent',
-        height: '18px',
-        width: '18px',
-      }}
-    >
-      {children}
-    </span>
-  );
-}
+  return <Icon {...otherProps} iconClass={iconClass} />;
+};
+
+export default Icon;

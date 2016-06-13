@@ -1,9 +1,5 @@
 // @flow
-import {
-  CompositeDecorator,
-  Editor,
-  EditorState,
-} from 'draft-js';
+import { CompositeDecorator, Editor, EditorState } from 'draft-js';
 import React, { Component, Element } from 'react';
 import { MenuItem } from 'react-toolbox';
 
@@ -15,9 +11,9 @@ import Icon from './Icon';
 import styles from './EditorPane.scss';
 
 type IconMenu = Array<{
-  label: string;
-  icon: string;
-  outputsTo?: string
+  label: string,
+  icon: string,
+  outputsTo?: string,
 }>;
 
 const commonIcons: {
@@ -63,14 +59,14 @@ const commonIcons: {
   ],
 };
 
-export default class EditorPane extends Component {
-  constructor() {
-    super();
+class EditorPane extends Component {
+  constructor(props: any) {
+    super(props);
 
     const decorator = new CompositeDecorator([
       {
         strategy: findEntitiesByType('icon'),
-        component: Icon,
+        component: Icon.fromEntity,
       },
     ]);
 
@@ -83,7 +79,7 @@ export default class EditorPane extends Component {
   }
 
   state: {
-    editorState: EditorState;
+    editorState: EditorState,
   };
 
   handleChange: (event: any) => void;
@@ -91,15 +87,28 @@ export default class EditorPane extends Component {
 
   props: any;
 
-  addIcon(iconClass: string, outputsTo?: string): void {
-    this.setState({ editorState: addIcon(this.state.editorState, iconClass, outputsTo) });
+  addIcon(
+    iconClass: string,
+    outputsTo?: string,
+  ): void {
+    this.setState({
+      editorState: addIcon(this.state.editorState, iconClass, outputsTo),
+    });
   }
 
-  handleChange(editorState: EditorState): void {
+  handleChange(
+    editorState: EditorState
+  ): void {
     this.setState({ editorState });
   }
 
-  handleCommonIconTap({ icon, outputsTo }: { icon: string; outputsTo?: string }): void {
+  handleCommonIconTap({
+    icon,
+    outputsTo,
+  }: {
+    icon: string,
+    outputsTo?: string
+  }): void {
     this.addIcon(icon, outputsTo);
   }
 
@@ -111,10 +120,10 @@ export default class EditorPane extends Component {
         <div className={styles.toolbar}>
           {Object.keys(commonIcons).map((iconGroup) => (
             <ButtonMenu
+              className={styles.commonIconMenu}
               id={`${iconGroup.toLowerCase()}Dropdown`}
               key={iconGroup}
               onSelect={this.handleCommonIconTap}
-              style={{ textAlign: 'left' }}
               title={iconGroup}
             >
               {commonIcons[iconGroup].map(({ label, icon, outputsTo }, index) => (
@@ -123,6 +132,7 @@ export default class EditorPane extends Component {
                   value={{ icon, outputsTo }}
                 >
                   {label}
+                  <Icon className={styles.commonIcon} iconClass={icon} />
                 </MenuItem>
               ))}
             </ButtonMenu>
@@ -139,3 +149,5 @@ export default class EditorPane extends Component {
     );
   }
 }
+
+export default EditorPane;
