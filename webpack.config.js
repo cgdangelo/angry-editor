@@ -9,6 +9,8 @@ const buildPath = path.join(__dirname, 'build');
 module.exports = {
   context: __dirname,
   entry: [
+    'webpack-dev-server/client?http://0.0.0.0:8080',
+    'webpack/hot/only-dev-server',
     'babel-polyfill',
     './src'
   ],
@@ -20,7 +22,7 @@ module.exports = {
     loaders: [
       {
         test: /\.jsx?$/,
-        loader: 'babel',
+        loaders: ['react-hot', 'babel'],
         exclude: /node_modules/
       },
 
@@ -33,13 +35,16 @@ module.exports = {
   devtool: 'inline-source-map',
   output: {
     path: buildPath,
-    filename: '[name]-[chunkhash].js'
+    filename: '[name]-[hash].js'
   },
   plugins: [
-    new HtmlWebpackPlugin({ template: './src/index.html' })
+    new HtmlWebpackPlugin({ template: './src/index.html' }),
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NoErrorsPlugin()
   ],
   devServer: {
-    inline: true
+    hot: true,
+    host: '0.0.0.0'
   }
 };
 /* eslint-enable */

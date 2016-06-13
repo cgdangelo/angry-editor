@@ -9,6 +9,7 @@ class ButtonMenu extends Component {
   constructor(props: {
     children?: Array<Element>,
     className?: string,
+    disabled?: boolean,
     onSelect?: (value: any) => void,
     title: string,
   }) {
@@ -21,6 +22,10 @@ class ButtonMenu extends Component {
     this.handleMenuButtonClick = this.handleMenuButtonClick.bind(this);
     this.handleMenuHide = this.handleMenuHide.bind(this);
   }
+
+  static defaultProps = {
+    disabled: false,
+  };
 
   state: {
     isActive: boolean,
@@ -43,11 +48,11 @@ class ButtonMenu extends Component {
   }
 
   render(): Element {
-    const { children, className, onSelect, title } = this.props;
+    const { children, className, disabled, onSelect, title } = this.props;
 
     return (
       <div className={classnames(styles.buttonMenu, className)}>
-        <Button onClick={this.handleMenuButtonClick}>
+        <Button disabled={disabled} onClick={this.handleMenuButtonClick}>
           <FontIcon value="arrow_drop_down" /> {title}
         </Button>
 

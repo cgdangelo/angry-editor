@@ -97,9 +97,11 @@ class EditorPane extends Component {
     iconClass: string,
     outputsTo?: string,
   ): void {
-    this.setState({
-      editorState: addIcon(this.state.editorState, iconClass, outputsTo),
-    });
+    if (this.isEditing()) {
+      this.setState({
+        editorState: addIcon(this.state.editorState, iconClass, outputsTo),
+      });
+    }
   }
 
   isEditing(): boolean {
@@ -139,7 +141,7 @@ class EditorPane extends Component {
   }
 
   render(): Element {
-    const { editorState, outputState } = this.state;
+    const { editorState, editMode, outputState } = this.state;
 
     return (
       <div>
@@ -147,6 +149,7 @@ class EditorPane extends Component {
           {Object.keys(commonIcons).map((iconGroup) => (
             <ButtonMenu
               className={styles.commonIconMenu}
+              disabled={!editMode}
               id={`${iconGroup.toLowerCase()}Dropdown`}
               key={iconGroup}
               onSelect={this.handleCommonIconClick}
