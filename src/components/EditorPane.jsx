@@ -3,20 +3,13 @@ import {
   CompositeDecorator,
   Editor,
   EditorState,
-  convertToRaw,
 } from 'draft-js';
 import React, { Component, Element } from 'react';
-import {
-  Button,
-  ButtonGroup,
-  ButtonToolbar,
-  DropdownButton,
-  MenuItem,
-} from 'react-bootstrap';
+import { MenuItem } from 'react-toolbox';
 
 import addIcon from '../draft/modifiers/addIcon';
-import convertToAngry from '../draft/convertToAngry';
 import findEntitiesByType from '../draft/findEntitiesByType';
+import ButtonMenu from './ButtonMenu';
 import Icon from './Icon';
 
 import styles from './EditorPane.scss';
@@ -87,9 +80,6 @@ export default class EditorPane extends Component {
 
     this.handleChange = this.handleChange.bind(this);
     this.handleCommonIconTap = this.handleCommonIconTap.bind(this);
-    this.logRaw = this.logRaw.bind(this);
-    this.logState = this.logState.bind(this);
-    this.logAngry = this.logAngry.bind(this);
   }
 
   state: {
@@ -97,10 +87,7 @@ export default class EditorPane extends Component {
   };
 
   handleChange: (event: any) => void;
-  handleCommonIconTap: (event: any) => void;
-  logRaw: () => void;
-  logState: () => void;
-  logAngry: () => void;
+  handleCommonIconTap: (value: any) => void;
 
   props: any;
 
@@ -112,22 +99,8 @@ export default class EditorPane extends Component {
     this.setState({ editorState });
   }
 
-  handleCommonIconTap(event: any): void {
-    const { icon, outputsTo } = event.target.dataset;
-
+  handleCommonIconTap({ icon, outputsTo }: { icon: string; outputsTo?: string }): void {
     this.addIcon(icon, outputsTo);
-  }
-
-  logRaw(): void {
-    console.log(convertToRaw(this.state.editorState.getCurrentContent()));
-  }
-
-  logState(): void {
-    console.log(this.state.editorState.toJS());
-  }
-
-  logAngry(): void {
-    console.log(convertToAngry(this.state.editorState.getCurrentContent()));
   }
 
   render(): Element {
@@ -135,32 +108,26 @@ export default class EditorPane extends Component {
 
     return (
       <div>
-        <ButtonToolbar>
-          <ButtonGroup>
-            <Button onClick={this.logRaw}>Log Raw</Button>
-            <Button onClick={this.logState}>Log State</Button>
-            <Button onClick={this.logAngry}>Log Angry</Button>
-          </ButtonGroup>
-
+        <div className={styles.toolbar}>
           {Object.keys(commonIcons).map((iconGroup) => (
-            <DropdownButton
+            <ButtonMenu
               id={`${iconGroup.toLowerCase()}Dropdown`}
               key={iconGroup}
+              onSelect={this.handleCommonIconTap}
+              style={{ textAlign: 'left' }}
               title={iconGroup}
             >
               {commonIcons[iconGroup].map(({ label, icon, outputsTo }, index) => (
                 <MenuItem
-                  data-icon={icon}
-                  data-outputs-to={outputsTo}
                   key={index}
-                  onClick={this.handleCommonIconTap}
+                  value={{ icon, outputsTo }}
                 >
                   {label}
                 </MenuItem>
               ))}
-            </DropdownButton>
+            </ButtonMenu>
           ))}
-        </ButtonToolbar>
+        </div>
 
         <div className={styles.editor}>
           <Editor

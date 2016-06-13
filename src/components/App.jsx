@@ -1,11 +1,19 @@
 // @flow
 import React, { Element } from 'react';
+import { AppBar, Layout, Panel } from 'react-toolbox';
 
 import EditorPane from './EditorPane';
 
-import 'normalizecss/normalize.css';
-import './App.scss';
+import styles from './App.scss';
 
 export default (): Element => (
-  <EditorPane />
+  <Layout className={styles.layout}>
+    <Panel className={styles.panel}>
+      <AppBar flat>
+        <a href="/">Angry Editor</a>
+      </AppBar>
+
+      <EditorPane />
+    </Panel>
+  </Layout>
 );

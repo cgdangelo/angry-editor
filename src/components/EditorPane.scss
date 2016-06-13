@@ -11,10 +11,15 @@
   box-sizing: border-box;
   cursor: text;
   margin-bottom: 2em;
-  padding: 16px;
+  padding: 2.2rem;
 
  :global(.public-DraftEditor-content) {
     min-height: 50vh;
-    font-family: Georgia;
   }
+}
+
+.toolbar {
+  align-items: center;
+  display: flex;
+  padding: 1rem;
 }

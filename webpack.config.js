@@ -7,6 +7,7 @@ const srcPath = path.join(__dirname, 'src');
 const buildPath = path.join(__dirname, 'build');
 
 module.exports = {
+  context: __dirname,
   entry: [
     'babel-polyfill',
     './src'
@@ -24,19 +25,12 @@ module.exports = {
       },
 
       {
-        test: /\.scss$/,
-        loader: 'style!css-loader?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]&sourceMap!sass?sourceMap',
-        exclude: /node_modules/
-      },
-
-      {
-        test: /\.css$/,
-        loader: 'style!css-loader',
-        include: /node_modules/
+        test: /\.s?css$/,
+        loader: 'style!css?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]&sourceMap!sass?sourceMap',
       }
     ]
   },
-  devtool: 'eval-source-map',
+  devtool: 'inline-source-map',
   output: {
     path: buildPath,
     filename: '[name]-[chunkhash].js'
