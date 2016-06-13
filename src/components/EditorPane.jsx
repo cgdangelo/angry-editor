@@ -1,9 +1,10 @@
 // @flow
-import { CompositeDecorator, Editor, EditorState } from 'draft-js';
+import { CompositeDecorator, ContentState, Editor, EditorState } from 'draft-js';
 import React, { Component, Element } from 'react';
 import { MenuItem, Switch } from 'react-toolbox';
 
 import addIcon from '../draft/modifiers/addIcon';
+import convertToAngry from '../draft/convertToAngry';
 import findEntitiesByType from '../draft/findEntitiesByType';
 import ButtonMenu from './ButtonMenu';
 import Icon from './Icon';
@@ -83,6 +84,7 @@ class EditorPane extends Component {
   state: {
     editorState: EditorState,
     editMode: boolean,
+    outputState?: EditorState,
   };
 
   handleChange: (event: any) => void;
@@ -100,10 +102,16 @@ class EditorPane extends Component {
     });
   }
 
+  isEditing(): boolean {
+    return this.state.editMode;
+  }
+
   handleChange(
     editorState: EditorState
   ): void {
-    this.setState({ editorState });
+    if (this.isEditing()) {
+      this.setState({ editorState });
+    }
   }
 
   handleCommonIconTap({
@@ -117,11 +125,21 @@ class EditorPane extends Component {
   }
 
   handleEditModeToggle(): void {
-    this.setState({ editMode: !this.state.editMode });
+    this.setState({ editMode: !this.isEditing() });
+
+    if (this.isEditing()) {
+      this.setState({
+        outputState: EditorState.createWithContent(
+          ContentState.createFromText(
+            convertToAngry(this.state.editorState.getCurrentContent())
+          )
+        )
+      });
+    }
   }
 
   render(): Element {
-    const { editorState } = this.state;
+    const { editorState, outputState } = this.state;
 
     return (
       <div>
@@ -147,7 +165,7 @@ class EditorPane extends Component {
           ))}
 
           <Switch
-            checked={this.state.editMode}
+            checked={this.isEditing()}
             label="Edit mode"
             onChange={this.handleEditModeToggle}
             theme={{ field: styles.editModeSwitch }}
@@ -156,7 +174,7 @@ class EditorPane extends Component {
 
         <div className={styles.editor}>
           <Editor
-            editorState={editorState}
+            editorState={this.isEditing() ? editorState : outputState}
             onChange={this.handleChange}
           />
         </div>
