@@ -4,3 +4,16 @@
 .layout, .panel {
   overflow-y: visible !important;
 }
+
+.appbar {
+  display: flex;
+}
+
+.navigation {
+  flex-grow: 1;
+  text-align: right;
+
+  > ul {
+    list-style: none;
+  }
+}

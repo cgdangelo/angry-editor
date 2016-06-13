@@ -1,7 +1,7 @@
 // @flow
 import { CompositeDecorator, Editor, EditorState } from 'draft-js';
 import React, { Component, Element } from 'react';
-import { MenuItem } from 'react-toolbox';
+import { MenuItem, Switch } from 'react-toolbox';
 
 import addIcon from '../draft/modifiers/addIcon';
 import findEntitiesByType from '../draft/findEntitiesByType';
@@ -72,18 +72,22 @@ class EditorPane extends Component {
 
     this.state = {
       editorState: EditorState.createEmpty(decorator),
+      editMode: true,
     };
 
     this.handleChange = this.handleChange.bind(this);
     this.handleCommonIconTap = this.handleCommonIconTap.bind(this);
+    this.handleEditModeToggle = this.handleEditModeToggle.bind(this);
   }
 
   state: {
     editorState: EditorState,
+    editMode: boolean,
   };
 
   handleChange: (event: any) => void;
   handleCommonIconTap: (value: any) => void;
+  handleEditModeToggle: () => void;
 
   props: any;
 
@@ -112,6 +116,10 @@ class EditorPane extends Component {
     this.addIcon(icon, outputsTo);
   }
 
+  handleEditModeToggle(): void {
+    this.setState({ editMode: !this.state.editMode });
+  }
+
   render(): Element {
     const { editorState } = this.state;
 
@@ -137,6 +145,13 @@ class EditorPane extends Component {
               ))}
             </ButtonMenu>
           ))}
+
+          <Switch
+            checked={this.state.editMode}
+            label="Edit mode"
+            onChange={this.handleEditModeToggle}
+            theme={{ field: styles.editModeSwitch }}
+          />
         </div>
 
         <div className={styles.editor}>
