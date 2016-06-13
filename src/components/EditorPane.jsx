@@ -77,7 +77,7 @@ class EditorPane extends Component {
     };
 
     this.handleChange = this.handleChange.bind(this);
-    this.handleCommonIconTap = this.handleCommonIconTap.bind(this);
+    this.handleCommonIconClick = this.handleCommonIconClick.bind(this);
     this.handleEditModeToggle = this.handleEditModeToggle.bind(this);
   }
 
@@ -88,7 +88,7 @@ class EditorPane extends Component {
   };
 
   handleChange: (event: any) => void;
-  handleCommonIconTap: (value: any) => void;
+  handleCommonIconClick: (value: any) => void;
   handleEditModeToggle: () => void;
 
   props: any;
@@ -114,7 +114,7 @@ class EditorPane extends Component {
     }
   }
 
-  handleCommonIconTap({
+  handleCommonIconClick({
     icon,
     outputsTo,
   }: {
@@ -133,7 +133,7 @@ class EditorPane extends Component {
           ContentState.createFromText(
             convertToAngry(this.state.editorState.getCurrentContent())
           )
-        )
+        ),
       });
     }
   }
@@ -149,7 +149,7 @@ class EditorPane extends Component {
               className={styles.commonIconMenu}
               id={`${iconGroup.toLowerCase()}Dropdown`}
               key={iconGroup}
-              onSelect={this.handleCommonIconTap}
+              onSelect={this.handleCommonIconClick}
               title={iconGroup}
             >
               {commonIcons[iconGroup].map(({ label, icon, outputsTo }, index) => (
