@@ -78,20 +78,10 @@ class EditorPane extends Component {
       },
     ]);
 
-    const savedContentState = localStorage.getItem('contentState');
-    let newContentState;
-
-    if (savedContentState) {
-      newContentState = convertFromRaw(JSON.parse(savedContentState));
-    } else {
-      newContentState = ContentState.createFromText('');
-    }
+    const contentState = this.createInitialContentState();
 
     this.state = {
-      editorState: EditorState.createWithContent(
-        newContentState,
-        decorator,
-      ),
+      editorState: EditorState.createWithContent(contentState, decorator),
       editMode: true,
       hasUnsavedChanges: false,
     };
@@ -115,6 +105,16 @@ class EditorPane extends Component {
   handleSaveClick: () => void;
 
   props: any;
+
+  createInitialContentState(): ContentState {
+    const savedContentState = localStorage.getItem('contentState');
+
+    if (savedContentState) {
+      return convertFromRaw(JSON.parse(savedContentState));
+    }
+
+    return ContentState.createFromText('');
+  }
 
   addIcon(iconClass: string, outputsTo?: string): void {
     if (this.isEditing()) {
