@@ -1,5 +1,12 @@
 // @flow
-import { CompositeDecorator, ContentState, Editor, EditorState } from 'draft-js';
+import {
+  CompositeDecorator,
+  ContentState,
+  Editor,
+  EditorState,
+  convertFromRaw,
+  convertToRaw,
+} from 'draft-js';
 import React, { Component, Element } from 'react';
 import { Button, MenuItem, Switch } from 'react-toolbox';
 
@@ -71,8 +78,20 @@ class EditorPane extends Component {
       },
     ]);
 
+    const savedContentState = localStorage.getItem('contentState');
+    let newContentState;
+
+    if (savedContentState) {
+      newContentState = convertFromRaw(JSON.parse(savedContentState));
+    } else {
+      newContentState = ContentState.createFromText('');
+    }
+
     this.state = {
-      editorState: EditorState.createEmpty(decorator),
+      editorState: EditorState.createWithContent(
+        newContentState,
+        decorator,
+      ),
       editMode: true,
       hasUnsavedChanges: false,
     };
@@ -109,6 +128,10 @@ class EditorPane extends Component {
     return this.state.editMode;
   }
 
+  hasUnsavedChanges(): boolean {
+    return this.state.hasUnsavedChanges;
+  }
+
   handleChange(nextEditorState: EditorState): void {
     if (this.isEditing()) {
       this.updateEditorState(nextEditorState);
@@ -116,12 +139,12 @@ class EditorPane extends Component {
   }
 
   updateEditorState(nextEditorState: EditorState): void {
-    const { editorState: previousEditorState, hasUnsavedChanges } = this.state;
+    const { editorState: previousEditorState } = this.state;
 
     this.setState({
       editorState: nextEditorState,
       hasUnsavedChanges: (
-        hasUnsavedChanges ||
+        this.hasUnsavedChanges() ||
         previousEditorState.getCurrentContent() !== nextEditorState.getCurrentContent()
       ),
     });
@@ -152,7 +175,15 @@ class EditorPane extends Component {
   }
 
   handleSaveClick(): void {
-    this.setState({ hasUnsavedChanges: false });
+    if (this.hasUnsavedChanges()) {
+      this.setState({ hasUnsavedChanges: false });
+
+      const { editorState } = this.state;
+
+      localStorage.setItem('contentState', JSON.stringify(
+        convertToRaw(editorState.getCurrentContent())
+      ));
+    }
   }
 
   render(): Element {
@@ -192,7 +223,7 @@ class EditorPane extends Component {
           <Button
             primary
             raised
-            disabled={!this.state.hasUnsavedChanges}
+            disabled={!this.hasUnsavedChanges()}
             onClick={this.handleSaveClick}
           >
             Save
