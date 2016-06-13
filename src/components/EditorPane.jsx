@@ -1,7 +1,7 @@
 // @flow
 import { CompositeDecorator, ContentState, Editor, EditorState } from 'draft-js';
 import React, { Component, Element } from 'react';
-import { MenuItem, Switch } from 'react-toolbox';
+import { Button, MenuItem, Switch } from 'react-toolbox';
 
 import addIcon from '../draft/modifiers/addIcon';
 import convertToAngry from '../draft/convertToAngry';
@@ -74,33 +74,34 @@ class EditorPane extends Component {
     this.state = {
       editorState: EditorState.createEmpty(decorator),
       editMode: true,
+      hasUnsavedChanges: false,
     };
 
     this.handleChange = this.handleChange.bind(this);
     this.handleCommonIconClick = this.handleCommonIconClick.bind(this);
     this.handleEditModeToggle = this.handleEditModeToggle.bind(this);
+    this.handleSaveClick = this.handleSaveClick.bind(this);
   }
 
   state: {
     editorState: EditorState,
     editMode: boolean,
     outputState?: EditorState,
+    hasUnsavedChanges: boolean,
   };
 
-  handleChange: (event: any) => void;
+  handleChange: (nextEditorState: EditorState) => void;
   handleCommonIconClick: (value: any) => void;
   handleEditModeToggle: () => void;
+  handleSaveClick: () => void;
 
   props: any;
 
-  addIcon(
-    iconClass: string,
-    outputsTo?: string,
-  ): void {
+  addIcon(iconClass: string, outputsTo?: string): void {
     if (this.isEditing()) {
-      this.setState({
-        editorState: addIcon(this.state.editorState, iconClass, outputsTo),
-      });
+      const nextEditorState = addIcon(this.state.editorState, iconClass, outputsTo);
+
+      this.updateEditorState(nextEditorState);
     }
   }
 
@@ -108,12 +109,22 @@ class EditorPane extends Component {
     return this.state.editMode;
   }
 
-  handleChange(
-    editorState: EditorState
-  ): void {
+  handleChange(nextEditorState: EditorState): void {
     if (this.isEditing()) {
-      this.setState({ editorState });
+      this.updateEditorState(nextEditorState);
     }
+  }
+
+  updateEditorState(nextEditorState: EditorState): void {
+    const { editorState: previousEditorState, hasUnsavedChanges } = this.state;
+
+    this.setState({
+      editorState: nextEditorState,
+      hasUnsavedChanges: (
+        hasUnsavedChanges ||
+        previousEditorState.getCurrentContent() !== nextEditorState.getCurrentContent()
+      ),
+    });
   }
 
   handleCommonIconClick({
@@ -138,6 +149,10 @@ class EditorPane extends Component {
         ),
       });
     }
+  }
+
+  handleSaveClick(): void {
+    this.setState({ hasUnsavedChanges: false });
   }
 
   render(): Element {
@@ -173,6 +188,15 @@ class EditorPane extends Component {
             onChange={this.handleEditModeToggle}
             theme={{ field: styles.editModeSwitch }}
           />
+
+          <Button
+            primary
+            raised
+            disabled={!this.state.hasUnsavedChanges}
+            onClick={this.handleSaveClick}
+          >
+            Save
+          </Button>
         </div>
 
         <div className={styles.editor}>
