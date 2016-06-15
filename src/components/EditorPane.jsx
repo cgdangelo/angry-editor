@@ -13,6 +13,7 @@ import { Button, MenuItem, Switch } from 'react-toolbox';
 import addIcon from '../draft/modifiers/addIcon';
 import convertToAngry from '../draft/convertToAngry';
 import findEntitiesByType from '../draft/findEntitiesByType';
+import Autocomplete from './Autocomplete';
 import ButtonMenu from './ButtonMenu';
 import Icon, { commonIcons } from './Icon';
 import iconList from '../iconList';
@@ -38,6 +39,7 @@ class EditorPane extends Component {
       hasUnsavedChanges: false,
     };
 
+    this.addIcon = this.addIcon.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleCommonIconClick = this.handleCommonIconClick.bind(this);
     this.handleEditModeToggle = this.handleEditModeToggle.bind(this);
@@ -51,6 +53,7 @@ class EditorPane extends Component {
     hasUnsavedChanges: boolean,
   };
 
+  addIcon: (iconClass: string, outputsTo?: string) => ContentState;
   handleChange: (nextEditorState: EditorState) => void;
   handleCommonIconClick: (value: any) => void;
   handleEditModeToggle: () => void;
@@ -164,6 +167,14 @@ class EditorPane extends Component {
               ))}
             </ButtonMenu>
           ))}
+
+          <Autocomplete
+            addIcon={this.addIcon}
+            multiple={false}
+            placeholder="Search for icon"
+            selectedPosition={null}
+            source={iconList}
+          />
 
           <Switch
             checked={this.isEditing()}
