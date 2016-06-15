@@ -9,12 +9,14 @@ import styles from './Autocomplete.scss';
 
 class Autocomplete extends Component {
   static defaultProps = {
+    disabled: false,
     minimumQueryLength: 3,
     maximumSuggestions: 10,
   };
 
   constructor(props: {
     addIcon: (iconClass: string, outputsTo?: string) => ContentState,
+    disabled: boolean,
     minimumQueryLength: number,
     maximumSuggestions: number,
     source: Array<string>,
@@ -103,6 +105,7 @@ class Autocomplete extends Component {
     return (
       <div className={styles.iconSearch}>
         <Input
+          disabled={this.props.disabled}
           onBlur={this.handleBlur}
           onChange={this.handleChange}
           onFocus={this.handleFocus}

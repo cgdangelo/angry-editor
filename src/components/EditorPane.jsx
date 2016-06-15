@@ -170,9 +170,7 @@ class EditorPane extends Component {
 
           <Autocomplete
             addIcon={this.addIcon}
-            multiple={false}
-            placeholder="Search for icon"
-            selectedPosition={null}
+            disabled={!this.isEditing()}
             source={iconList}
           />
 
