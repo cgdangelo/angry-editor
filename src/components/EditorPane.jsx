@@ -8,30 +8,28 @@ import {
   convertToRaw,
 } from 'draft-js';
 import React, { Component, Element } from 'react';
-import { Button, MenuItem, Switch } from 'react-toolbox';
 
 import addIcon from '../draft/modifiers/addIcon';
 import convertToAngry from '../draft/convertToAngry';
 import findEntitiesByType from '../draft/findEntitiesByType';
-import Autocomplete from './Autocomplete';
-import ButtonMenu from './ButtonMenu';
-import Icon, { commonIcons } from './Icon';
-import iconList from '../iconList';
+
+import Icon from './Icon';
+import Toolbar from './Toolbar';
 
 import styles from './EditorPane.scss';
 
 class EditorPane extends Component {
-  constructor(props: any) {
-    super(props);
+  constructor() {
+    super();
 
-    const decorator = new CompositeDecorator([
+    const decorator: CompositeDecorator = new CompositeDecorator([
       {
         strategy: findEntitiesByType('icon'),
         component: Icon.fromEntity,
       },
     ]);
 
-    const contentState = this.createInitialContentState();
+    const contentState: ContentState = this.createInitialContentState();
 
     this.state = {
       editorState: EditorState.createWithContent(contentState, decorator),
@@ -44,13 +42,15 @@ class EditorPane extends Component {
     this.handleCommonIconClick = this.handleCommonIconClick.bind(this);
     this.handleEditModeToggle = this.handleEditModeToggle.bind(this);
     this.handleSaveClick = this.handleSaveClick.bind(this);
+    this.hasUnsavedChanges = this.hasUnsavedChanges.bind(this);
+    this.isEditing = this.isEditing.bind(this);
   }
 
   state: {
     editorState: EditorState,
     editMode: boolean,
-    outputState?: EditorState,
     hasUnsavedChanges: boolean,
+    outputState?: EditorState,
   };
 
   addIcon: (iconClass: string, outputsTo?: string) => ContentState;
@@ -58,11 +58,11 @@ class EditorPane extends Component {
   handleCommonIconClick: (value: any) => void;
   handleEditModeToggle: () => void;
   handleSaveClick: () => void;
-
-  props: any;
+  hasUnsavedChanges: () => boolean;
+  isEditing: () => boolean;
 
   createInitialContentState(): ContentState {
-    const savedContentState = localStorage.getItem('contentState');
+    const savedContentState: ?string = localStorage.getItem('contentState');
 
     if (savedContentState) {
       return convertFromRaw(JSON.parse(savedContentState));
@@ -73,7 +73,7 @@ class EditorPane extends Component {
 
   addIcon(iconClass: string, outputsTo?: string): void {
     if (this.isEditing()) {
-      const nextEditorState = addIcon(this.state.editorState, iconClass, outputsTo);
+      const nextEditorState: EditorState = addIcon(this.state.editorState, iconClass, outputsTo);
 
       this.updateEditorState(nextEditorState);
     }
@@ -105,13 +105,7 @@ class EditorPane extends Component {
     });
   }
 
-  handleCommonIconClick({
-    icon,
-    outputsTo,
-  }: {
-    icon: string,
-    outputsTo?: string
-  }): void {
+  handleCommonIconClick({ icon, outputsTo }: { icon: string, outputsTo?: string }): void {
     this.addIcon(icon, outputsTo);
   }
 
@@ -146,50 +140,14 @@ class EditorPane extends Component {
 
     return (
       <div>
-        <div className={styles.toolbar}>
-          {Object.keys(commonIcons).map((iconGroup) => (
-            <ButtonMenu
-              className={styles.commonIconMenu}
-              disabled={!this.isEditing()}
-              id={`${iconGroup.toLowerCase()}Dropdown`}
-              key={iconGroup}
-              onSelect={this.handleCommonIconClick}
-              title={iconGroup}
-            >
-              {commonIcons[iconGroup].map(({ label, icon, outputsTo }, index) => (
-                <MenuItem
-                  key={index}
-                  value={{ icon, outputsTo }}
-                >
-                  {label}
-                  <Icon className={styles.commonIcon} iconClass={icon} />
-                </MenuItem>
-              ))}
-            </ButtonMenu>
-          ))}
-
-          <Autocomplete
-            addIcon={this.addIcon}
-            disabled={!this.isEditing()}
-            source={iconList}
-          />
-
-          <Switch
-            checked={this.isEditing()}
-            label="Edit mode"
-            onChange={this.handleEditModeToggle}
-            theme={{ field: styles.editModeSwitch }}
-          />
-
-          <Button
-            primary
-            raised
-            disabled={!this.hasUnsavedChanges()}
-            onClick={this.handleSaveClick}
-          >
-            Save
-          </Button>
-        </div>
+        <Toolbar
+          addIcon={this.addIcon}
+          isEditing={this.isEditing}
+          handleCommonIconClick={this.handleCommonIconClick}
+          handleEditModeToggle={this.handleEditModeToggle}
+          handleSaveClick={this.handleSaveClick}
+          hasUnsavedChanges={this.hasUnsavedChanges}
+        />
 
         <div className={styles.editor}>
           <Editor
