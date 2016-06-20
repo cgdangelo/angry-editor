@@ -5,7 +5,7 @@
   "author": "Charles D'Angelo <c.g.dangelo@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "build": "webpack",
+    "build": "NODE_ENV=production webpack",
     "flow": "flow",
     "lint": "eslint --ignore-path .gitignore --ext js,jsx .",
     "start": "webpack-dev-server --progress --colors"

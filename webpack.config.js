@@ -3,14 +3,11 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const webpack = require('webpack');
 
-const srcPath = path.join(__dirname, 'src');
 const buildPath = path.join(__dirname, 'build');
 
-module.exports = {
+const config = {
   context: __dirname,
   entry: [
-    'webpack-dev-server/client?http://0.0.0.0:8080',
-    'webpack/hot/only-dev-server',
     'babel-polyfill',
     './src'
   ],
@@ -35,16 +32,29 @@ module.exports = {
   devtool: 'inline-source-map',
   output: {
     path: buildPath,
-    filename: '[name]-[hash].js'
+    filename: '[name].js'
   },
   plugins: [
-    new HtmlWebpackPlugin({ template: './src/index.html' }),
+    new HtmlWebpackPlugin({ template: './src/index.html' })
+  ]
+};
+
+if (process.env.NODE_ENV !== 'production') {
+  config.entry.unshift(
+    'webpack-dev-server/client?http://0.0.0.0:8080',
+    'webpack/hot/only-dev-server'
+  );
+
+  config.plugins.push(
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoErrorsPlugin()
-  ],
-  devServer: {
+  );
+
+  config.devServer = {
     hot: true,
     host: '0.0.0.0'
-  }
-};
+  };
+}
+
+module.exports = config;
 /* eslint-enable */
