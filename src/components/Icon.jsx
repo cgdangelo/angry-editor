@@ -16,7 +16,7 @@ const Icon = ({
 }): Element => (
   <span
     className={classnames(styles.icon, className)}
-    style={{ backgroundImage: `url(/static/icons/${iconClass}.png)` }}
+    style={{ backgroundImage: `url(static/icons/${iconClass}.png)` }}
   >
     {children}
   </span>
