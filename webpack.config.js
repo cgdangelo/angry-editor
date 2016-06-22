@@ -3,8 +3,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const webpack = require('webpack');
 
-const buildPath = path.join(__dirname, 'build');
-
 const config = {
   context: __dirname,
   entry: [
@@ -31,7 +29,7 @@ const config = {
   },
   devtool: 'inline-source-map',
   output: {
-    path: buildPath,
+    path: __dirname,
     filename: '[name].js'
   },
   plugins: [
