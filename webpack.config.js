@@ -27,7 +27,6 @@ const config = {
       }
     ]
   },
-  devtool: 'inline-source-map',
   output: {
     path: __dirname,
     filename: '[name].js'
@@ -38,6 +37,8 @@ const config = {
 };
 
 if (process.env.NODE_ENV !== 'production') {
+  config.devtool = 'inline-source-map';
+
   config.entry.unshift(
     'webpack-dev-server/client?http://0.0.0.0:8080',
     'webpack/hot/only-dev-server'
@@ -52,6 +53,16 @@ if (process.env.NODE_ENV !== 'production') {
     hot: true,
     host: '0.0.0.0'
   };
+} else {
+  config.plugins.push(
+    new webpack.optimize.DedupePlugin(),
+    new webpack.optimize.OccurrenceOrderPlugin(),
+    new webpack.optimize.UglifyJsPlugin({
+      compress: {
+        warnings: false
+      }
+    })
+  );
 }
 
 module.exports = config;
