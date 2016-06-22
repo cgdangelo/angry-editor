@@ -15,7 +15,7 @@ class Autocomplete extends Component {
   };
 
   constructor(props: {
-    addIcon: (iconClass: string, outputsTo?: string) => ContentState,
+    addIcon: (iconClass: string, outputsTo: string) => ContentState,
     disabled: boolean,
     minimumQueryLength: number,
     maximumSuggestions: number,
@@ -44,11 +44,11 @@ class Autocomplete extends Component {
   handleChange: (value: string) => void;
   handleSuggestionSelect: (event: Event) => void;
 
-  handleBlur() {
+  handleBlur(): void {
     this.setState({ inputHasFocus: false });
   }
 
-  handleFocus() {
+  handleFocus(): void {
     this.setState({ inputHasFocus: true });
   }
 
@@ -61,24 +61,26 @@ class Autocomplete extends Component {
   }
 
   handleSuggestionSelect(event: Event): void {
-    this.props.addIcon(event.target.innerText.trim());
+    if (event.target instanceof HTMLElement) {
+      this.props.addIcon(event.target.innerHTML.trim());
+    }
   }
 
   populateSuggestions(searchText: string): void {
-    const searchPattern = new RegExp(searchText, 'i');
+    const searchPattern: RegExp = new RegExp(searchText, 'i');
 
     this.setState({
-      suggestions: this.props.source.filter((icon) => searchPattern.test(icon)),
+      suggestions: this.props.source.filter((icon: string): boolean => searchPattern.test(icon)),
     });
   }
 
   renderSuggestions(): Array<Element> {
     let index = 0;
-    const totalSuggestions = this.state.suggestions.length;
-    const renderedSuggestions = [];
+    const totalSuggestions: number = this.state.suggestions.length;
+    const renderedSuggestions: Array<string> = [];
 
     for (; index < totalSuggestions && index < this.props.maximumSuggestions; index++) {
-      const suggestion = this.state.suggestions[index];
+      const suggestion: string = this.state.suggestions[index];
 
       renderedSuggestions.push(
         <ListItem
