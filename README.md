@@ -1,6 +1,8 @@
 # Angry Editor
 Web-based editor for the "AngryAssignments" World of Warcraft addon.
 
+[Use it here.](http://cgdangelo.github.io/angry-editor)
+
 ### What is Angry Assignments?
 [Angry Assignments (AA)](http://mods.curse.com/addons/wow/angry-assignments) is an amazing addon, and is almost always a requirement for for Mythic raiding. It allows raid leaders to effectively communicate tasks, roles, strategies, interrupt orders, positioning and more.
 
